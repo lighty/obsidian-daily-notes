@@ -1,0 +1,86 @@
+{
+  "name": "obsidian-daily-notes",
+  "author": "Hikaru Watanabe",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/*.test.cjs",
+    "pack": "python3 scripts/pack-plugin-pbw.py ."
+  },
+  "pebble": {
+    "displayName": "Obsidian Daily Notes",
+    "uuid": "339ce305-dbf3-4987-b846-a826e7c9c827",
+    "sdkVersion": "3",
+    "projectType": "plugin",
+    "configPage": "src/config.html",
+    "usesPermissions": [
+      {
+        "name": "ReadFiles",
+        "reason": "To find today's daily note and your daily note settings in the vault you pick",
+        "required": true
+      },
+      {
+        "name": "WriteFiles",
+        "reason": "To create today's daily note and add memos to it",
+        "required": true
+      }
+    ],
+    "plugin": {
+      "description": "Adds memos straight into today's Obsidian daily note, creating the note from your template when it does not exist yet. No Obsidian plugin needed.",
+      "script": "src/plugin/index.js",
+      "sources": [
+        {
+          "category": "notes",
+          "items": ["destination"],
+          "properties": {
+            "name": ["shortText"],
+            "configured": ["boolean", "shortText"],
+            "path": ["shortText", "longText"]
+          },
+          "supportsMultiple": false,
+          "callerPermissions": [],
+          "suggestedRefreshIntervalSec": 300
+        },
+        {
+          "category": "notes",
+          "items": ["configured"],
+          "properties": {
+            "name": ["shortText"],
+            "configured": ["boolean", "shortText"]
+          },
+          "supportsMultiple": false,
+          "callerPermissions": [],
+          "suggestedRefreshIntervalSec": 300
+        }
+      ],
+      "actions": [
+        {
+          "name": "add_daily_memo",
+          "description": "Add a short memo as one line to today's Obsidian daily note (the note is created if needed). Use when the user asks to jot, log, note or add something to their daily note or journal for today.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "instanceId": {
+                "type": "string",
+                "enum": ["daily-note"],
+                "description": "Optional destination id from the notes/destination source."
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The memo text, preferably the user's exact words. Line breaks are joined into one line."
+              }
+            },
+            "required": ["text"],
+            "additionalProperties": false
+          },
+          "targets": ["notes/destination"],
+          "destructive": false,
+          "requiresConfirmation": false,
+          "callerPermissions": []
+        }
+      ]
+    }
+  }
+}

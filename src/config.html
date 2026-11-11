@@ -1,0 +1,175 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Obsidian Daily Notes settings</title>
+<style>
+  body{font:16px system-ui,sans-serif;background:#151413;color:#f6f2ee;margin:0;padding:24px}
+  main{max-width:640px;margin:auto}
+  h1{margin-top:0;font-size:24px}
+  section{border:1px solid #494542;border-radius:12px;padding:16px;margin:16px 0;background:#201e1c}
+  h2{margin:0 0 8px;font-size:18px}
+  label{display:block;margin:14px 0 6px;color:#ddd5cf}
+  input,button{font:inherit;box-sizing:border-box;border-radius:8px;border:1px solid #625d58;padding:10px;background:#2b2927;color:#fff;width:100%}
+  button{background:#7c5cff;border:0;font-weight:600;margin-top:10px}
+  button.secondary{background:#45413e}
+  button:disabled{opacity:.55}
+  .row{display:flex;gap:10px}.row button{flex:1}
+  small,.muted{color:#aaa29c}
+  .error{color:#ff8b83}
+  code{background:#2b2927;border-radius:4px;padding:1px 4px}
+  dl{margin:8px 0 0}dt{color:#aaa29c;font-size:14px;margin-top:8px}dd{margin:2px 0 0;word-break:break-all}
+</style></head><body><main>
+<h1>Obsidian Daily Notes</h1>
+<p class="muted">Memos you send from Pebble are added to today's daily note in your Obsidian vault.</p>
+
+<section>
+  <h2>Vault</h2>
+  <div id="vault">Checking…</div>
+  <p id="vaultHint" class="muted"></p>
+  <div class="row"><button id="choose">Choose vault folder</button><button class="secondary" id="clear">Disconnect</button></div>
+  <small>Pick the vault's top folder (the one that contains <code>.obsidian</code>).</small>
+</section>
+
+<section>
+  <h2>Daily note</h2>
+  <small>Leave these empty to follow the vault's Daily notes settings.</small>
+  <label for="dailyFolder">Folder</label><input id="dailyFolder" placeholder="(from Daily notes settings)">
+  <label for="dateFormat">Date format</label><input id="dateFormat" placeholder="(from Daily notes settings, else YYYY-MM-DD)">
+  <label for="templatePath">Template file</label><input id="templatePath" placeholder="(from Daily notes settings)">
+</section>
+
+<section>
+  <h2>Memo format</h2>
+  <label for="section">Section heading</label><input id="section" placeholder="pebble">
+  <small>Memos go under <code>## heading</code>, which is added at the end of the note if missing.</small>
+  <label for="lineFormat">Line format</label><input id="lineFormat" placeholder="- {time} : {text}">
+  <small>Use <code>{time}</code> (HH:mm), <code>{date}</code> (YYYY-MM-DD) and <code>{text}</code>.</small>
+</section>
+
+<button id="save">Save settings</button>
+<p id="status"></p>
+
+<section>
+  <h2>Check</h2>
+  <button class="secondary" id="preview">Show where today's memo goes</button>
+  <div id="previewOut"></div>
+</section>
+
+<script>
+var target = 'plugin', busy = false, vault = {};
+function byId(id) { return document.getElementById(id); }
+function send(message) { return Pebble.sendMessage(target, message); }
+function setBusy(value) { busy = value; ['choose', 'clear', 'save', 'preview'].forEach(function (id) { byId(id).disabled = value; }); }
+async function exclusive(work) { if (busy) return; setBusy(true); try { return await work(); } finally { setBusy(false); } }
+function setText(id, text, isError) { var el = byId(id); el.textContent = text; el.className = isError ? 'error' : 'muted'; }
+
+function showVault(v) {
+  vault = v || {};
+  setText('vaultHint', '');
+  if (vault.configured) {
+    byId('vault').textContent = 'Connected: ' + (vault.name || 'selected folder');
+    if (!vault.writable) setText('vaultHint', 'Read-only: choose the folder again and allow changes.', true);
+  } else if (vault.withdrawn) {
+    byId('vault').textContent = 'Access to ' + (vault.name ? '“' + vault.name + '”' : 'the folder') + ' was withdrawn';
+    setText('vaultHint', 'Choose the folder again to reconnect.');
+  } else {
+    byId('vault').textContent = 'No vault selected';
+  }
+}
+
+function fill(c) {
+  ['dailyFolder', 'dateFormat', 'templatePath', 'section', 'lineFormat'].forEach(function (id) {
+    if (c && c[id] !== undefined) byId(id).value = c[id];
+  });
+}
+
+// Only one folder is used; drop grants left over from earlier picks.
+async function revokeOthers(keepId) {
+  var held;
+  try { held = await Pebble.fileSystem.grants(); } catch (e) { return; }
+  for (var i = 0; i < held.length; i++) {
+    if (held[i].id !== keepId) { try { await Pebble.fileSystem.revoke(held[i].id); } catch (e) {} }
+  }
+}
+
+function load() {
+  return exclusive(async function () {
+    var result = await send({ type: 'status' });
+    showVault(result.vault);
+    fill(result.config);
+  });
+}
+
+byId('choose').onclick = function () {
+  return exclusive(async function () {
+    setText('vaultHint', '');
+    var picked;
+    try { picked = await Pebble.showDirectoryPicker({ mode: 'readwrite' }); }
+    catch (e) {
+      if (e && e.name === 'AbortError') return;
+      setText('vaultHint', e && e.name === 'NotAllowedError'
+        ? 'Allow this plugin to read and change files on its permissions page first.'
+        : 'Could not choose a folder: ' + (e && e.message || e), true);
+      return;
+    }
+    var result = await send({ type: 'setFolder', id: picked.id, name: picked.name });
+    if (result.error) {
+      setText('vaultHint', result.error, true);
+      try { await Pebble.fileSystem.revoke(picked.id); } catch (e) {}
+      return;
+    }
+    await revokeOthers(picked.id);
+    showVault(result.vault);
+  });
+};
+
+byId('clear').onclick = function () {
+  return exclusive(async function () {
+    await send({ type: 'clearFolder' });
+    await revokeOthers('');
+    showVault({});
+  });
+};
+
+byId('save').onclick = function () {
+  return exclusive(async function () {
+    setText('status', 'Saving…');
+    var c = {};
+    ['dailyFolder', 'dateFormat', 'templatePath', 'section', 'lineFormat'].forEach(function (id) { c[id] = byId(id).value; });
+    try {
+      var result = await send({ type: 'save', config: c });
+      if (!result.ok) throw new Error(result.error || 'Could not save.');
+      fill(result.config);
+      setText('status', 'Saved. You can close this page.');
+    } catch (e) { setText('status', e.message, true); }
+  });
+};
+
+function fromLabel(from) { return from === 'plugin' ? 'these settings' : from === 'obsidian' ? 'Obsidian' : 'default'; }
+
+byId('preview').onclick = function () {
+  return exclusive(async function () {
+    var out = byId('previewOut');
+    out.textContent = 'Checking…';
+    var r = await send({ type: 'preview' });
+    if (r.error) { out.innerHTML = ''; var p = document.createElement('p'); p.className = 'error'; p.textContent = r.error; out.appendChild(p); return; }
+    var rows = [
+      ['Daily note', r.path + (r.exists ? ' (exists)' : ' (will be created)')],
+      ['Folder / format from', fromLabel(r.from.folder) + ' / ' + fromLabel(r.from.format)],
+      ['Template', r.template ? r.template + (r.templateFound ? '' : ' (not found)') : '(none)'],
+      ['Obsidian daily notes config', r.obsidianConfigFound ? 'read' : 'not found'],
+      ['Memo line', '## ' + r.section + '  →  ' + r.sampleLine],
+    ];
+    var dl = document.createElement('dl');
+    rows.forEach(function (row) {
+      var dt = document.createElement('dt'); dt.textContent = row[0];
+      var dd = document.createElement('dd'); dd.textContent = row[1];
+      dl.appendChild(dt); dl.appendChild(dd);
+    });
+    out.innerHTML = ''; out.appendChild(dl);
+  });
+};
+
+Pebble.addEventListener('ready', function (e) { if (e.target === target) load(); });
+if (Pebble.readyTargets && Pebble.readyTargets().indexOf(target) !== -1) load();
+</script>
+</main></body></html>
