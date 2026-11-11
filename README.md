@@ -111,8 +111,9 @@ npm run pack    # same pbw without the Pebble SDK
 2. `npm test && pebble build`
 3. In the Pebble Developer Dashboard, upload `build/obsidian-daily-notes.pbw`
    as a new release. The store icons are `store/icon-large.png` (144px) and
-   `store/icon-small.png` (80px), made from `src/icon.svg` with
-   `rsvg-convert -w 144 -h 144 -b white`.
+   `store/icon-small.png` (80px). `npm run icons` makes them from
+   `src/icon.svg`: light grey lines on a transparent background, to match
+   the app's dark store cards.
 
 Keep the `uuid` in `package.json` unchanged: it identifies the plugin.
 

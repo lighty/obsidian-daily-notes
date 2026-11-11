@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "test": "node --test test/*.test.cjs",
-    "pack": "python3 scripts/pack-plugin-pbw.py ."
+    "pack": "python3 scripts/pack-plugin-pbw.py .",
+    "icons": "for s in large:144 small:80; do sed 's/#111/#d6d6d6/' src/icon.svg | rsvg-convert -w ${s#*:} -h ${s#*:} -o store/icon-${s%:*}.png; done"
   },
   "pebble": {
     "displayName": "Daily Notes for Obsidian",
