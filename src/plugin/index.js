@@ -1,4 +1,4 @@
-// Obsidian Daily Notes — a Pebble app plugin.
+// Daily Notes for Obsidian — a Pebble app plugin.
 //
 // Exposes one action, `send_to_Obsidian_Daily_Notes`, that Index (or a watchapp via Pebble.invokeAction) calls with
 // a memo text. The memo is written straight into today's Obsidian daily note inside a vault folder
@@ -10,7 +10,7 @@
 
 var STORE_KEY = 'obsidian_daily_notes_config_v1';
 var INSTANCE_ID = 'daily-note';
-var DISPLAY_NAME = 'Obsidian Daily Notes';
+var DISPLAY_NAME = 'Daily Notes for Obsidian';
 // The app labels an action by its name ("_" -> space, first letter upper-cased). The 0.1.0 name is
 // still accepted: the app can keep calling it until it reloads the manifest.
 var ACTION_NAMES = ['send_to_Obsidian_Daily_Notes', 'add_daily_memo'];
@@ -450,12 +450,12 @@ if (typeof Pebble !== 'undefined') {
       });
       return;
     }
-    respond.error('INVALID_REQUEST', 'Unsupported Obsidian Daily Notes source.');
+    respond.error('INVALID_REQUEST', 'Unsupported Daily Notes for Obsidian source.');
   });
 
   Pebble.registerActionHandler(async function (request, respond) {
     if (ACTION_NAMES.indexOf(request.action) === -1) {
-      respond.error('INVALID_REQUEST', 'Unsupported Obsidian Daily Notes action.');
+      respond.error('INVALID_REQUEST', 'Unsupported Daily Notes for Obsidian action.');
       return;
     }
     var args = request.args || {};

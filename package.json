@@ -1,7 +1,7 @@
 {
   "name": "obsidian-daily-notes",
   "author": "Hikaru Watanabe",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -9,7 +9,7 @@
     "pack": "python3 scripts/pack-plugin-pbw.py ."
   },
   "pebble": {
-    "displayName": "Obsidian Daily Notes",
+    "displayName": "Daily Notes for Obsidian",
     "uuid": "339ce305-dbf3-4987-b846-a826e7c9c827",
     "sdkVersion": "3",
     "projectType": "plugin",
@@ -27,7 +27,7 @@
       }
     ],
     "plugin": {
-      "description": "Adds memos straight into today's Obsidian daily note, creating the note from your template when it does not exist yet. No Obsidian plugin needed.",
+      "description": "Adds memos straight into today's Obsidian daily note, creating the note from your template when it does not exist yet. No Obsidian plugin needed. Unofficial; not affiliated with Obsidian.",
       "script": "src/plugin/index.js",
       "sources": [
         {

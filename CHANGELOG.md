@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+
+- Rename the plugin to "Daily Notes for Obsidian" and mark it as unofficial. Settings are kept.
+
 ## 0.1.1
 
 - Rename the action to `send_to_Obsidian_Daily_Notes` so the app shows "Send to Obsidian Daily Notes". The old `add_daily_memo` name is still accepted.

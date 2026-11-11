@@ -1,4 +1,6 @@
-# Obsidian Daily Notes (Pebble plugin)
+# Daily Notes for Obsidian (Pebble plugin)
+
+> Unofficial. Not affiliated with or endorsed by Obsidian.
 
 A plugin for the Pebble mobile app's **Plugins** system that adds memos
 straight into today's [Obsidian](https://obsidian.md) daily note. No
@@ -102,7 +104,19 @@ npm run pack    # build/obsidian-daily-notes.pbw
   released pebble-tool cannot build plugin-only projects yet. With the
   SDK's plugins branch, `pebble build` also works (`wscript`).
 
-Reference: [Pebble Plugins guide](https://developer.repebble.com/guides/plugins/preview/).
+### Publishing
+
+1. Bump `version` in `package.json` and add a `CHANGELOG.md` entry.
+2. `npm test && npm run pack`
+3. In the Pebble Developer Dashboard, upload `build/obsidian-daily-notes.pbw`
+   as a new release. The store icons are `store/icon-large.png` (144px) and
+   `store/icon-small.png` (80px), made from `src/icon.svg` with
+   `rsvg-convert -w 144 -h 144 -b white`.
+
+Keep the `uuid` in `package.json` unchanged: it identifies the plugin.
+
+Reference: [Pebble Plugins guide](https://developer.repebble.com/guides/plugins/preview/),
+[Publishing plugins](https://developer.repebble.com/guides/plugins/publishing-plugins/).
 
 ## License
 
