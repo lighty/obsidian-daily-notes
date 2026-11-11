@@ -19,7 +19,7 @@ as soon as it arrives.
 
 ## How it works
 
-1. Index 01 (or a watchapp) calls the plugin action `add_daily_memo` with
+1. Index 01 (or a watchapp) calls the plugin action `send_to_Obsidian_Daily_Notes` with
    the memo text.
 2. The plugin works out today's daily note path. Each setting comes from the
    plugin settings if you set it, else from the vault's
@@ -72,7 +72,7 @@ The date and time come from the phone's clock when the action runs.
 
 ## Action
 
-### `add_daily_memo(instanceId?, text)`
+### `send_to_Obsidian_Daily_Notes(instanceId?, text)`
 
 Add a short memo as one line to today's Obsidian daily note. The note is
 created if needed.

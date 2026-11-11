@@ -1,7 +1,7 @@
 {
   "name": "obsidian-daily-notes",
   "author": "Hikaru Watanabe",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -56,7 +56,7 @@
       ],
       "actions": [
         {
-          "name": "add_daily_memo",
+          "name": "send_to_Obsidian_Daily_Notes",
           "description": "Add a short memo as one line to today's Obsidian daily note (the note is created if needed). Use when the user asks to jot, log, note or add something to their daily note or journal for today.",
           "parameters": {
             "type": "object",

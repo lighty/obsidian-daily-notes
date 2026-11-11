@@ -84,9 +84,9 @@ function loadPlugin() {
 }
 
 /** Call the action handler and collect what it responds with. */
-function invoke(handlers, args) {
+function invoke(handlers, args, action) {
   return new Promise((resolve) => {
-    handlers.action({ action: 'add_daily_memo', args }, {
+    handlers.action({ action: action || 'send_to_Obsidian_Daily_Notes', args }, {
       ok: (value) => resolve({ ok: value }),
       error: (code, message) => resolve({ error: code, message }),
     });
@@ -274,4 +274,11 @@ test('a withdrawn grant reports AUTH_REQUIRED', async () => {
   const res = await invoke(handlers, { text: 'x' });
   assert.strictEqual(res.error, 'AUTH_REQUIRED');
   assert.match(res.message, /withdrawn/);
+});
+
+test('the 0.1.0 action name still works; unknown names are rejected', async () => {
+  const { handlers, vault } = await connectedPlugin({});
+  assert.ok((await invoke(handlers, { text: 'old name' }, 'add_daily_memo')).ok);
+  assert.match(readVault(vault, `${todayName()}.md`), / : old name$/m);
+  assert.strictEqual((await invoke(handlers, { text: 'x' }, 'nope')).error, 'INVALID_REQUEST');
 });
