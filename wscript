@@ -1,5 +1,5 @@
-# Build rules for the Pebble SDK (plugins branch): a plugin-only pbw with no watch binary.
-# Until the released pebble-tool can build plugin-only projects, use scripts/pack-plugin-pbw.py.
+# Build rules for `pebble build` (pebble-tool 5.1+, SDK 4.44+): a plugin-only pbw with no watch
+# binary. scripts/pack-plugin-pbw.py makes the same pbw without the SDK.
 top = '.'
 out = 'build'
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Package this plugin-only project into a .pbw without the Pebble SDK.
 
-The released pebble-tool cannot build plugin-only projects yet. A plugin pbw has no watch binary:
-it is a zip holding appinfo.json (generated from package.json's `pebble` block) plus the plugin
-script and the settings page that block names.
+`pebble build` (pebble-tool 5.1+) makes the same pbw; this script is for machines without the SDK.
+A plugin pbw has no watch binary: it is a zip holding appinfo.json (generated from package.json's
+`pebble` block) plus the plugin script and the settings page that block names.
 
     python3 scripts/pack-plugin-pbw.py [project-dir]
 

@@ -95,19 +95,20 @@ failed; nothing is half-written).
 
 ```sh
 npm test        # node:test, with an in-memory vault
-npm run pack    # build/obsidian-daily-notes.pbw
+pebble build    # build/obsidian-daily-notes.pbw (pebble-tool 5.1+, SDK 4.44+)
+npm run pack    # same pbw without the Pebble SDK
 ```
 
 - `src/plugin/index.js`: the plugin script (plain JS, no build step)
 - `src/config.html`: the settings page
-- `scripts/pack-plugin-pbw.py`: packages the pbw without the SDK. The
-  released pebble-tool cannot build plugin-only projects yet. With the
-  SDK's plugins branch, `pebble build` also works (`wscript`).
+- `wscript`: build rules for `pebble build`
+- `scripts/pack-plugin-pbw.py`: packages the same pbw without the SDK,
+  for machines where pebble-tool is not installed
 
 ### Publishing
 
 1. Bump `version` in `package.json` and add a `CHANGELOG.md` entry.
-2. `npm test && npm run pack`
+2. `npm test && pebble build`
 3. In the Pebble Developer Dashboard, upload `build/obsidian-daily-notes.pbw`
    as a new release. The store icons are `store/icon-large.png` (144px) and
    `store/icon-small.png` (80px), made from `src/icon.svg` with
