@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0
+
+- Add the `create_note` action so the plugin can be picked as where Index notes save (Settings → Index Agent → Notes). `send_to_Obsidian_Daily_Notes` is unchanged.
+
 ## 0.2.0
 
 - Rename the plugin to "Daily Notes for Obsidian" and mark it as unofficial. Settings are kept.

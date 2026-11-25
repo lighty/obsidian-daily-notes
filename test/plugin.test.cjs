@@ -276,6 +276,20 @@ test('a withdrawn grant reports AUTH_REQUIRED', async () => {
   assert.match(res.message, /withdrawn/);
 });
 
+test('create_note, called by the app with only text, adds the memo', async () => {
+  const { handlers, vault } = await connectedPlugin({});
+  const res = await invoke(handlers, { text: 'from destination' }, 'create_note');
+  assert.ok(res.ok, JSON.stringify(res));
+  assert.match(readVault(vault, `${todayName()}.md`), / : from destination$/m);
+});
+
+test('the manifest offers this plugin as a notes destination', () => {
+  const plugin = require('../package.json').pebble.plugin;
+  assert.ok(plugin.actions.some((a) => a.name === 'create_note'));
+  assert.ok(plugin.actions.some((a) => a.name === 'send_to_Obsidian_Daily_Notes'));
+  assert.ok(plugin.sources.some((s) => s.category === 'notes' && s.items.includes('configured')));
+});
+
 test('the 0.1.0 action name still works; unknown names are rejected', async () => {
   const { handlers, vault } = await connectedPlugin({});
   assert.ok((await invoke(handlers, { text: 'old name' }, 'add_daily_memo')).ok);

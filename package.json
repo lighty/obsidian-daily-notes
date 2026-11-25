@@ -1,7 +1,7 @@
 {
   "name": "obsidian-daily-notes",
   "author": "Hikaru Watanabe",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -71,6 +71,31 @@
                 "type": "string",
                 "minLength": 1,
                 "description": "The memo text, preferably the user's exact words. Line breaks are joined into one line."
+              }
+            },
+            "required": ["text"],
+            "additionalProperties": false
+          },
+          "targets": ["notes/destination"],
+          "destructive": false,
+          "requiresConfirmation": false,
+          "callerPermissions": []
+        },
+        {
+          "name": "create_note",
+          "description": "Add a note as one line to today's Obsidian daily note (the note is created if needed). Called by the Pebble app when Daily Notes for Obsidian is chosen as where Index notes save.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "instanceId": {
+                "type": "string",
+                "enum": ["daily-note"],
+                "description": "Optional destination id from the notes/destination source."
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The complete note text, preferably the user's exact words. Line breaks are joined into one line."
               }
             },
             "required": ["text"],

@@ -22,7 +22,8 @@ as soon as it arrives.
 ## How it works
 
 1. Index 01 (or a watchapp) calls the plugin action `send_to_Obsidian_Daily_Notes` with
-   the memo text.
+   the memo text. When the plugin is the Index notes destination, the app
+   calls `create_note` instead; both do the same thing.
 2. The plugin works out today's daily note path. Each setting comes from the
    plugin settings if you set it, else from the vault's
    `.obsidian/daily-notes.json` (folder, date format, template), else a
@@ -40,14 +41,15 @@ The date and time come from the phone's clock when the action runs.
 
 ## Setup
 
-1. Pebble app → Settings → Plugins → turn on **Plugins / permissions
-   preview** (app 1.16 or later).
-2. Install this plugin (sideload the `.pbw`; see Development).
-3. Open the plugin's settings and tap **Choose vault folder**. Pick the
+1. Install this plugin from the Pebble app store (Pebble app 2.0.0 or
+   later).
+2. Open the plugin's settings and tap **Choose vault folder**. Pick the
    vault's top folder (the one that contains `.obsidian`) and allow changes.
-4. Tap **Show where today's memo goes** to check the resolved path and
+3. Tap **Show where today's memo goes** to check the resolved path and
    template.
-5. Ask Index to add something to your daily note.
+4. Ask Index to add something to your daily note.
+5. Optional: Settings → Index Agent → Notes → choose **Daily Notes for
+   Obsidian**, so notes Index saves by default go to your daily note too.
 
 ## Settings
 
@@ -86,10 +88,18 @@ Errors: `INVALID_ARGS` (empty text), `AUTH_REQUIRED` (no vault, or access
 withdrawn), `PERMISSION_DENIED` (read-only), `PLUGIN_UNAVAILABLE` (write
 failed; nothing is half-written).
 
+### `create_note(instanceId?, text)`
+
+Same as above. The app reserves this name for notes destinations: it calls
+it when the plugin is chosen as where Index notes save, and does not offer
+it to the agent as a tool.
+
 ### Sources
 
 - `notes/destination`: name, configured, path (today's daily note)
-- `notes/configured`: name, configured
+- `notes/configured`: name, configured. With `create_note`, this makes the
+  plugin a notes destination; `configured` is true once a writable vault is
+  chosen.
 
 ## Development
 
